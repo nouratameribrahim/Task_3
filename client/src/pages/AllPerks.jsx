@@ -30,6 +30,19 @@ export default function AllPerks() {
 
 */
 
+// ==================== HOOK #1: Initial Data Loading ====================
+useEffect(() => {
+  loadAllPerks() // load all perks on page load
+}, [])
+
+// ==================== HOOK #2: Auto-search on Input Change ====================
+useEffect(() => {
+  const debounce = setTimeout(() => {
+    loadAllPerks()
+  }, 500) // debounce to avoid too many requests
+
+  return () => clearTimeout(debounce)
+}, [searchQuery, merchantFilter]) // triggers when user types or changes filter
   
   useEffect(() => {
     // Extract all merchant names from perks array
@@ -136,7 +149,8 @@ export default function AllPerks() {
                 type="text"
                 className="input"
                 placeholder="Enter perk name..."
-                
+                value={searchQuery}                  // bind state
+                onChange={e => setSearchQuery(e.target.value)} // update state on typing
               />
               <p className="text-xs text-zinc-500 mt-1">
                 Auto-searches as you type, or press Enter / click Search
@@ -151,16 +165,17 @@ export default function AllPerks() {
               </label>
               <select
                 className="input"
-                
+                value={merchantFilter}                       // bind state
+                onChange={e => setMerchantFilter(e.target.value)} // update state on change
               >
                 <option value="">All Merchants</option>
-                
                 {uniqueMerchants.map(merchant => (
                   <option key={merchant} value={merchant}>
                     {merchant}
                   </option>
                 ))}
               </select>
+
             </div>
           </div>
 
